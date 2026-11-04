@@ -56,11 +56,11 @@ if __name__ == '__main__':
         '3': []
     }
 
-    print(get_book(books, "P-1234"))
-    print(get_shelf(directories, "D-1122"))
-    print(get_book(books, "12345"))
-    print(add_book(books, directories, 'P-1234', 'Евгений Онегин', 'Александр Пушкин', '3'))
-    print(add_book(books, directories, 'N-5678', 'Война и мир', 'Лев Толстой', '3'))
-    print(get_shelf(directories, "N-5678"))
-    print(get_book(books, "N-5678"))
-    print(get_shelf(directories, "12345"))
+    # print(get_book(books, "P-1234"))
+    # print(get_shelf(directories, "D-1122"))
+    # print(get_book(books, "12345"))
+    # print(add_book(books, directories, 'P-1234', 'Евгений Онегин', 'Александр Пушкин', '3'))
+    # print(add_book(books, directories, 'N-5678', 'Война и мир', 'Лев Толстой', '3'))
+    # print(get_shelf(directories, "N-5678"))
+    # print(get_book(books, "N-5678"))
+    # print(get_shelf(directories, "12345"))

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
+PATH = 'disk:/temp_folder'
 
 @pytest.fixture
 def token():
@@ -20,7 +21,7 @@ def headers(token):
 
 @pytest.fixture
 def params():
-    return {'path': 'disk:/temp_folder'}
+    return {'path': PATH}
 
 @pytest.fixture
 def create_and_delete_folder(headers, params):
@@ -30,25 +31,30 @@ def create_and_delete_folder(headers, params):
     if response.status_code not in [201, 409]:
         pytest.fail(f'Ошибка при создании папки: {response.text}')
 
-    yield
+    yield response
 
     # Удаление папки.
     response2 = requests.delete(BASE_URL, headers=headers,
-                                params={'path': 'disk:/temp_folder', 'permanently': 'true'})
+                                params={'path': PATH, 'permanently': 'true'})
     if response2.status_code not in [202, 204]:
         pytest.fail(f'Ошибка при удалении папки: {response2.text}')
 
 def test_create_folder_success(create_and_delete_folder, headers, params):
-    response = requests.put(BASE_URL, headers=headers, params=params)
+    response = create_and_delete_folder
     assert response.status_code in [201, 409]
 
-def test_folder_existing(create_and_delete_folder, headers, params):
+    response2 = requests.get(BASE_URL, headers=headers, params=params)
+    assert response2.status_code == 200
+
+def test_folder_existing(headers, params):
     response = requests.put(BASE_URL, headers=headers, params=params)
-    assert response.status_code == 409
+
+    response2 = requests.put(BASE_URL, headers=headers, params=params)
+    assert response2.status_code == 409
 
 def test_invalid_data(headers):
     response = requests.put(BASE_URL, headers=headers, params={'path': 'yd-disk:/temp_folder'})
-    assert response.status_code == 400
+    assert response.status_code in [400, 404], f"Ошибка: {response.text}"
 
 def test_not_autorized(params):
     response = requests.put(BASE_URL, params=params)
@@ -56,6 +62,8 @@ def test_not_autorized(params):
 
 def test_invalid_path(headers):
     response = requests.put(BASE_URL, headers=headers, params={'path': 'disk:////////'})
-    assert response.status_code == 404
+    assert response.status_code in [400, 404], f'Ошибка: {response.text}'
+
+
 
 

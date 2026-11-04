@@ -1,7 +1,10 @@
 import time
+import re
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import os
 from dotenv import load_dotenv
@@ -22,15 +25,16 @@ def user_phone():
 
 def test_correct_phone(driver, user_phone):
 
-    phone_input = driver.find_element(By.CSS_SELECTOR, 'input[data-testid="text-field-input"]')
+    phone_input = driver.find_element(By.CSS_SELECTOR, 'div[data-testid="phone-input"]')
     phone_input.send_keys(user_phone)
-    time.sleep(5)
+    wait = WebDriverWait(driver, 5)
+    button = wait.until(EC.element_to_be_clickable
+                        ((By.CSS_SELECTOR, 'button[data-testid="split-add-user-next-phone"]')))
+    button.click()
 
-    button_click = driver.find_element(By.CSS_SELECTOR, 'button[data-testid="split-add-user-next-phone"]')
-    button_click.click()
-    time.sleep(5)
+    input_field = wait.until(EC.visibility_of_element_located
+                             ((By.CSS_SELECTOR, 'input[data-testid="code-field-segment"]')))
 
-    current_url = driver.current_url
+    assert input_field.is_displayed() == True
 
-    assert current_url == 'https://passport.yandex.ru/pwl-yandex/auth/code'
 
